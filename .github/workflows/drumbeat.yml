@@ -1,0 +1,51 @@
+name: UDC Evergreen Drumbeat
+
+on:
+  schedule:
+    # 9:00 AM Eastern. UTC offset varies with DST (13:00 UTC = 9AM EDT, 14:00 UTC = 9AM EST),
+    # so this runs both times; the script itself is idempotent per day (row already Posted).
+    - cron: "0 13 * * *"
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (1 = don't post or write to Notion, 0 = real run)"
+        required: true
+        default: "1"
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run drumbeat
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+        run: python scripts/run.py
+
+      - name: Commit posted/ record
+        if: github.event.inputs.dry_run != '1'
+        run: |
+          git config user.name "udc-drumbeat-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add posted/
+          git diff --cached --quiet || git commit -m "Record post $(date -u +%Y-%m-%d)"
+          git push
