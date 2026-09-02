@@ -262,7 +262,7 @@ def main():
         if url not in all_urls:
             all_urls.append(url)
 
-    status = "Posted" if urls and not errors else "Posted (partial)" if urls else "Failed"
+    status = "Posted" if urls and not errors else "Posted (partial)" if all_urls else "Failed"
     note = "; ".join(errors) if errors else "Published " + ", ".join(urls)
     if all_urls:
         note = f"{note}; All known URLs: {', '.join(all_urls)}"
