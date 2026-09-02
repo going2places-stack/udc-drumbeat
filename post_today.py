@@ -30,6 +30,7 @@ def required_env(name):
 NOTION_TOKEN = required_env("NOTION_TOKEN")
 NOTION_DB = required_env("NOTION_DATABASE_ID")
 META_TOKEN = os.environ.get("META_ACCESS_TOKEN", "").strip()
+FB_PAGE_TOKEN = os.environ.get("FB_PAGE_ACCESS_TOKEN", "").strip()
 IG_USER_ID = os.environ.get("IG_USER_ID", "").strip()
 FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "").strip()
 TG_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
@@ -135,7 +136,11 @@ def update_row(page_id, status, note="", post_urls=None):
 def meta_post(path, data):
     if not META_TOKEN:
         raise RuntimeError("Missing META_ACCESS_TOKEN")
-    response = requests.post(f"{GRAPH}/{path}", data={**data, "access_token": META_TOKEN}, timeout=60)
+    return meta_post_with_token(path, data, META_TOKEN)
+
+
+def meta_post_with_token(path, data, token):
+    response = requests.post(f"{GRAPH}/{path}", data={**data, "access_token": token}, timeout=60)
     if response.status_code >= 400:
         raise RuntimeError(f"Meta {path} -> {response.status_code}: {response.text[:500]}")
     return response.json()
@@ -173,7 +178,14 @@ def publish_instagram(image_url, caption):
 def publish_facebook(image_url, caption):
     if not FB_PAGE_ID:
         raise RuntimeError("Missing FB_PAGE_ID")
-    result = meta_post(f"{FB_PAGE_ID}/photos", {"url": image_url, "caption": caption, "published": "true"})
+    token = FB_PAGE_TOKEN or META_TOKEN
+    if not token:
+        raise RuntimeError("Missing FB_PAGE_ACCESS_TOKEN or META_ACCESS_TOKEN")
+    result = meta_post_with_token(
+        f"{FB_PAGE_ID}/photos",
+        {"url": image_url, "caption": caption, "published": "true"},
+        token,
+    )
     post_id = result.get("post_id") or result.get("id")
     return f"https://www.facebook.com/{post_id}"
 

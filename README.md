@@ -20,6 +20,7 @@ Daily GitHub Actions automation for posting approved Unofficial DC evergreen con
 
 Optional:
 
+- `FB_PAGE_ACCESS_TOKEN` - use when Facebook Page publishing needs a dedicated Page access token separate from the Instagram publishing token.
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHAT_ID`
 
