@@ -104,6 +104,7 @@ def parse_row(page):
     if PLATFORMS_OVERRIDE:
         platforms = PLATFORMS_OVERRIDE
     full_caption = caption + (f"\n\n{hashtags}" if hashtags else "")
+    existing_post_url = props.get("Post URL", {}).get("url")
 
     return {
         "id": page["id"],
@@ -111,6 +112,7 @@ def parse_row(page):
         "image_url": image_url,
         "caption": full_caption,
         "platforms": platforms or ["Instagram", "Facebook"],
+        "existing_post_url": existing_post_url,
     }
 
 
@@ -253,10 +255,19 @@ def main():
             errors.append(f"Facebook: {exc}")
             log(errors[-1])
 
+    all_urls = []
+    if row.get("existing_post_url"):
+        all_urls.append(row["existing_post_url"])
+    for url in urls:
+        if url not in all_urls:
+            all_urls.append(url)
+
     status = "Posted" if urls and not errors else "Posted (partial)" if urls else "Failed"
     note = "; ".join(errors) if errors else "Published " + ", ".join(urls)
-    update_row(row["id"], status, note, urls)
-    archive(today, row, urls, status, errors)
+    if all_urls:
+        note = f"{note}; All known URLs: {', '.join(all_urls)}"
+    update_row(row["id"], status, note, all_urls)
+    archive(today, row, all_urls, status, errors)
 
     telegram(
         f"UDC drumbeat {status} - {today}\n{row['title']}\n"
