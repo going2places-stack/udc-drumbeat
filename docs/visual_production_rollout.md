@@ -36,9 +36,9 @@ Keep the daily 9:00 a.m. Eastern scheduler reliable by producing publish-ready s
 
 | Target Date | Type | Local File | Next Step |
 | --- | --- | --- | --- |
-| 2026-09-08 | Wordless Visual | `assets/generated/2026-09-visual-prep/2026-09-08-national-mall-wordless.png` | Uploaded to Drive; Kevin review before scheduling |
-| 2026-09-11 | Wordless Visual | `assets/generated/2026-09-visual-prep/2026-09-11-cherry-blossom-logo-wordless.png` | Uploaded to Drive; Kevin review before scheduling |
-| 2026-09-16 | Wordless Visual | `assets/generated/2026-09-visual-prep/2026-09-16-gogo-drummers-wordless.png` | Uploaded to Drive; Kevin review before scheduling |
+| 2026-09-08 | Wordless Visual | `assets/generated/2026-09-visual-prep/2026-09-08-national-mall-wordless.png` | Approved by Kevin and scheduled in Notion |
+| 2026-09-11 | Wordless Visual | `assets/generated/2026-09-visual-prep/2026-09-11-cherry-blossom-logo-wordless.png` | Approved by Kevin and scheduled in Notion |
+| 2026-09-16 | Wordless Visual | `assets/generated/2026-09-visual-prep/2026-09-16-gogo-drummers-wordless.png` | Approved by Kevin and scheduled in Notion |
 
 ## Uploaded Candidate URLs
 
