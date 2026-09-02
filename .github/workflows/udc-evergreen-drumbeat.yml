@@ -10,6 +10,14 @@ on:
         description: "Use 1 to print without posting; 0 to publish"
         required: true
         default: "1"
+      platforms:
+        description: "Optional comma list override, e.g. Facebook or Instagram,Facebook"
+        required: false
+        default: ""
+      allow_partial:
+        description: "Use 1 to retry rows marked Posted (partial)"
+        required: false
+        default: "0"
 
 permissions:
   contents: write
@@ -49,6 +57,8 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+          PLATFORMS_OVERRIDE: ${{ github.event.inputs.platforms || '' }}
+          ALLOW_PARTIAL: ${{ github.event.inputs.allow_partial || '0' }}
         run: python post_today.py
       - name: Archive posted record
         if: always() && steps.schedule_window.outputs.should_run == '1'

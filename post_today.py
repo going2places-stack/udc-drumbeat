@@ -35,6 +35,12 @@ FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "").strip()
 TG_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 TG_CHAT = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
 DRY_RUN = os.environ.get("DRY_RUN", "0") == "1"
+ALLOW_PARTIAL = os.environ.get("ALLOW_PARTIAL", "0") == "1"
+PLATFORMS_OVERRIDE = [
+    platform.strip()
+    for platform in os.environ.get("PLATFORMS_OVERRIDE", "").split(",")
+    if platform.strip()
+]
 
 NOTION_HEADERS = {
     "Authorization": f"Bearer {NOTION_TOKEN}",
@@ -56,11 +62,19 @@ def title_text(prop):
 
 
 def find_todays_row(today):
+    status_filter = {"property": "Status", "select": {"equals": "Scheduled"}}
+    if ALLOW_PARTIAL:
+        status_filter = {
+            "or": [
+                {"property": "Status", "select": {"equals": "Scheduled"}},
+                {"property": "Status", "select": {"equals": "Posted (partial)"}},
+            ]
+        }
     payload = {
         "filter": {
             "and": [
                 {"property": "Date", "date": {"equals": today.isoformat()}},
-                {"property": "Status", "select": {"equals": "Scheduled"}},
+                status_filter,
             ]
         },
         "page_size": 5,
@@ -87,6 +101,8 @@ def parse_row(page):
     caption = rich_text(props.get("Caption", {})).strip()
     hashtags = rich_text(props.get("Hashtags", {})).strip()
     platforms = [item["name"] for item in props.get("Platforms", {}).get("multi_select", [])]
+    if PLATFORMS_OVERRIDE:
+        platforms = PLATFORMS_OVERRIDE
     full_caption = caption + (f"\n\n{hashtags}" if hashtags else "")
 
     return {
@@ -155,7 +171,7 @@ def publish_instagram(image_url, caption):
 def publish_facebook(image_url, caption):
     if not FB_PAGE_ID:
         raise RuntimeError("Missing FB_PAGE_ID")
-    result = meta_post(f"{FB_PAGE_ID}/photos", {"url": image_url, "message": caption})
+    result = meta_post(f"{FB_PAGE_ID}/photos", {"url": image_url, "caption": caption, "published": "true"})
     post_id = result.get("post_id") or result.get("id")
     return f"https://www.facebook.com/{post_id}"
 
@@ -192,6 +208,10 @@ def telegram(message):
 def main():
     today = dt.datetime.now(TZ).date()
     log(f"Drumbeat run for {today} (dry_run={DRY_RUN})")
+    if ALLOW_PARTIAL:
+        log("Including Posted (partial) rows in today's lookup.")
+    if PLATFORMS_OVERRIDE:
+        log(f"Platform override active: {PLATFORMS_OVERRIDE}")
 
     page = find_todays_row(today)
     if not page:
