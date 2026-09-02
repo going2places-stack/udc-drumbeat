@@ -50,6 +50,16 @@ These files are in the `UDC Drumbeat Publish Images` Drive folder and verified a
 | 2026-09-11 | `14GmXria4gDsSa44VAMyewHDss1cJunVq` | `https://drive.google.com/uc?export=download&id=14GmXria4gDsSa44VAMyewHDss1cJunVq` |
 | 2026-09-16 | `1s1dNoe2gz81xuOcGRImna_AVFWjEiBFe` | `https://drive.google.com/uc?export=download&id=1s1dNoe2gz81xuOcGRImna_AVFWjEiBFe` |
 
+## First Motion Exports
+
+These are subtle vertical MP4 motion versions built from the approved stills. They are intended for YouTube Shorts, Instagram/Facebook Reels-style reuse, and future LinkedIn video testing, while the static PNGs remain the reliable daily scheduler fallback.
+
+| Target Date | Local File | Drive File ID | Direct Video URL | Specs |
+| --- | --- | --- | --- | --- |
+| 2026-09-08 | `assets/generated/2026-09-motion-prep/2026-09-08-national-mall-short.mp4` | `1wVAlJxxHefrFmN-5AdmaIgcYKM8054D_` | `https://drive.google.com/uc?export=download&id=1wVAlJxxHefrFmN-5AdmaIgcYKM8054D_` | 1080x1920, H.264, 30 fps, 12s, no audio |
+| 2026-09-11 | `assets/generated/2026-09-motion-prep/2026-09-11-cherry-blossom-logo-short.mp4` | `1kItOr6no7xoB4CBI1XzHByG9rEBtI9_S` | `https://drive.google.com/uc?export=download&id=1kItOr6no7xoB4CBI1XzHByG9rEBtI9_S` | 1080x1920, H.264, 30 fps, 12s, no audio |
+| 2026-09-16 | `assets/generated/2026-09-motion-prep/2026-09-16-gogo-drummers-short.mp4` | `1z92lHYrc9ODR5yndoqgF-ms6BF1UcN8e` | `https://drive.google.com/uc?export=download&id=1z92lHYrc9ODR5yndoqgF-ms6BF1UcN8e` | 1080x1920, H.264, 30 fps, 12s, no audio |
+
 ## Motion Specs For First Three
 
 ### 2026-09-08 National Mall
@@ -87,3 +97,7 @@ Avoid: watermarks, political signs, generic skyline, distorted landmarks, malfor
 ## Scheduling Rule
 
 Do not add generated visuals to the live Notion calendar until they are reviewed, uploaded to the publish-ready Drive folder, and verified as publicly fetchable by Meta.
+
+## Motion Scheduling Rule
+
+Do not auto-post video yet. Use the MP4s as reviewed creative candidates until the YouTube and LinkedIn destinations, captions, audio policy, and API access paths are confirmed.
