@@ -13,16 +13,16 @@ Date: 2026-09-01
 - Matched 5 finished quote images in Drive.
 - Loaded 5 matched rows into Notion as `Scheduled`, dated 2026-09-02 through 2026-09-06.
 - Added the daily GitHub Actions workflow and publishing scripts.
-
-## Blocked By Credentials Or Account UI
-
-- Meta app/system-user token creation still requires Facebook/Meta UI access and Kevin's approval where prompted.
-- `META_ACCESS_TOKEN`, `FB_PAGE_ID`, and `IG_USER_ID` are still unknown.
-- GitHub CLI is installed, but the local token for `going2places-stack` is invalid, so repo creation, push, and `gh secret set` are blocked until re-authentication.
-- `NOTION_TOKEN` is still needed as a GitHub secret for Actions, even though the connected Notion app was sufficient for creating the database/rows in this session.
+- Created Meta app `UDC Drumbeat Publisher`, system-user token, and GitHub secrets for Meta/Notion publishing.
+- Created publish-ready Drive folder `UDC Drumbeat Publish Images` and verified copied image links are publicly fetchable.
+- Updated scheduled Notion rows to use the public publish-ready image copies.
+- Scheduled GitHub Actions publishing for 9:00 a.m. Eastern year-round.
+- Created the first September visual prep packet for 2026-09-07 through 2026-09-20.
 
 ## Ready Backlog
 
 Ready-to-go scheduled days: 5.
 
 Remaining visual needs: 33 rows.
+
+Next visual prep page: `UDC Drumbeat Visual Prep Queue - September 2026` in the Unofficial DC Operations layer.
