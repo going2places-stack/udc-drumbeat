@@ -160,7 +160,8 @@ def publish_facebook(image_url, caption):
     return f"https://www.facebook.com/{post_id}"
 
 
-def archive(today, row, urls, status):
+def archive(today, row, urls, status, errors=None):
+    errors = errors or []
     os.makedirs("posted", exist_ok=True)
     path = f"posted/{today.isoformat()}.md"
     with open(path, "w", encoding="utf-8") as handle:
@@ -169,6 +170,8 @@ def archive(today, row, urls, status):
         handle.write(f"platforms: {', '.join(row['platforms'])}\n")
         for url in urls:
             handle.write(f"url: {url}\n")
+        for error in errors:
+            handle.write(f"error: {error}\n")
         handle.write(f"\n---\n\n{row['caption']}\n")
     return path
 
@@ -233,7 +236,7 @@ def main():
     status = "Posted" if urls and not errors else "Posted (partial)" if urls else "Failed"
     note = "; ".join(errors) if errors else "Published " + ", ".join(urls)
     update_row(row["id"], status, note, urls)
-    archive(today, row, urls, status)
+    archive(today, row, urls, status, errors)
 
     telegram(
         f"UDC drumbeat {status} - {today}\n{row['title']}\n"
