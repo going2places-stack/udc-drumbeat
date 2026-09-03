@@ -32,6 +32,10 @@ python scripts/publish_today.py --dry-run
 python scripts/import_ready_posts.py --input data/ready_posts.json --dry-run
 ```
 
+## Local 9:00 a.m. Publisher
+
+For a more punctual local clock than GitHub Actions, use the macOS launchd runner documented in `docs/local_scheduler.md`. It runs `post_today.py` at 9:00, 9:05, 9:15, and 9:30 a.m. local time, with Notion status preventing duplicate posts.
+
 ## Notes
 
 Meta requires `image_url` values to be reachable by Meta's servers. If images are stored in private Google Drive links, either upload them into Notion as files or use a public/direct image URL before running a real publish.
