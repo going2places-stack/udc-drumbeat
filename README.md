@@ -34,7 +34,7 @@ python scripts/import_ready_posts.py --input data/ready_posts.json --dry-run
 
 ## Local 9:00 a.m. Publisher
 
-For a more punctual local clock than GitHub Actions, use the macOS launchd runner documented in `docs/local_scheduler.md`. It runs `post_today.py` at 9:00, 9:05, 9:15, and 9:30 a.m. local time, with Notion status preventing duplicate posts.
+For a more punctual local clock than GitHub Actions, use the macOS launchd runners documented in `docs/local_scheduler.md`. Fully local posting runs `post_today.py` from the Mac with a private `.env`. Bridge mode triggers GitHub `workflow_dispatch` at 9:00, 9:05, 9:15, and 9:30 a.m. local time using the existing GitHub secrets. Notion status prevents duplicate posts.
 
 ## Notes
 

@@ -13,6 +13,16 @@ GitHub Actions scheduled workflows are best-effort and can start late. The local
 - launchd tries at 9:00, 9:05, 9:15, and 9:30 a.m. local time.
 - Duplicate posts are prevented by Notion: after a row is marked `Posted`, later retry runs find no `Scheduled` row for that date.
 
+## Bridge Mode Without Local Tokens
+
+If the GitHub repository has the required secrets but the Mac does not yet have a local `.env`, use the GitHub dispatch runner:
+
+```bash
+./scripts/install_local_github_dispatch_launchd.sh
+```
+
+This makes the Mac trigger `workflow_dispatch` at 9:00, 9:05, 9:15, and 9:30 a.m. local time. GitHub still performs the actual publish using its existing secrets. This is not as direct as fully local posting, but it is more punctual than relying only on GitHub's best-effort scheduled workflow.
+
 ## Required Local `.env`
 
 Create `/Users/clawagent/Documents/ChatGPT/UDC - Drumbeat Posts/.env` with:
