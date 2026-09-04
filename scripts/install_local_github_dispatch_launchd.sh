@@ -25,25 +25,25 @@ cat > "$PLIST" <<PLIST
       <key>Hour</key>
       <integer>9</integer>
       <key>Minute</key>
-      <integer>0</integer>
+      <integer>20</integer>
     </dict>
     <dict>
       <key>Hour</key>
       <integer>9</integer>
       <key>Minute</key>
-      <integer>5</integer>
+      <integer>35</integer>
     </dict>
     <dict>
       <key>Hour</key>
       <integer>9</integer>
+      <key>Minute</key>
+      <integer>50</integer>
+    </dict>
+    <dict>
+      <key>Hour</key>
+      <integer>10</integer>
       <key>Minute</key>
       <integer>15</integer>
-    </dict>
-    <dict>
-      <key>Hour</key>
-      <integer>9</integer>
-      <key>Minute</key>
-      <integer>30</integer>
     </dict>
   </array>
   <key>StandardOutPath</key>

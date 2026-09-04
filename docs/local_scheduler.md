@@ -21,7 +21,7 @@ If the GitHub repository has the required secrets but the Mac does not yet have 
 ./scripts/install_local_github_dispatch_launchd.sh
 ```
 
-This makes the Mac trigger `workflow_dispatch` at 9:00, 9:05, 9:15, and 9:30 a.m. local time. GitHub still performs the actual publish using its existing secrets. This is not as direct as fully local posting, but it is more punctual than relying only on GitHub's best-effort scheduled workflow.
+This makes the Mac trigger `workflow_dispatch` at 9:20, 9:35, 9:50, and 10:15 a.m. local time. GitHub still performs the actual publish using its existing secrets. This is not as direct as fully local posting, but it is more punctual than relying only on GitHub's best-effort scheduled workflow.
 
 ## Required Local `.env`
 

@@ -5,8 +5,13 @@ REPO_DIR="/Users/clawagent/Documents/ChatGPT/UDC - Drumbeat Posts"
 LOG_DIR="$REPO_DIR/logs"
 ENV_FILE="$REPO_DIR/.env"
 LOCK_DIR="/tmp/udc-drumbeat-local.lock"
+PYTHON="$REPO_DIR/.venv/bin/python"
 
 mkdir -p "$LOG_DIR"
+
+DRY_RUN_OVERRIDE="${DRY_RUN-}"
+ALLOW_PARTIAL_OVERRIDE="${ALLOW_PARTIAL-}"
+PLATFORMS_OVERRIDE_OVERRIDE="${PLATFORMS_OVERRIDE-}"
 
 if ! mkdir "$LOCK_DIR" 2>/dev/null; then
   echo "[$(date)] Another local publish run is active; exiting." >> "$LOG_DIR/local-publish.log"
@@ -25,6 +30,16 @@ set -a
 source "$ENV_FILE"
 set +a
 
+if [ -n "$DRY_RUN_OVERRIDE" ]; then
+  DRY_RUN="$DRY_RUN_OVERRIDE"
+fi
+if [ -n "$ALLOW_PARTIAL_OVERRIDE" ]; then
+  ALLOW_PARTIAL="$ALLOW_PARTIAL_OVERRIDE"
+fi
+if [ -n "$PLATFORMS_OVERRIDE_OVERRIDE" ]; then
+  PLATFORMS_OVERRIDE="$PLATFORMS_OVERRIDE_OVERRIDE"
+fi
+
 export DRY_RUN="${DRY_RUN:-0}"
 export ALLOW_PARTIAL="${ALLOW_PARTIAL:-0}"
 export PLATFORMS_OVERRIDE="${PLATFORMS_OVERRIDE:-}"
@@ -32,7 +47,7 @@ export PLATFORMS_OVERRIDE="${PLATFORMS_OVERRIDE:-}"
 {
   echo "[$(date)] Starting local publish. DRY_RUN=$DRY_RUN ALLOW_PARTIAL=$ALLOW_PARTIAL PLATFORMS_OVERRIDE=$PLATFORMS_OVERRIDE"
   set +e
-  /usr/bin/env python3 post_today.py
+  "$PYTHON" post_today.py
   result=$?
   set -e
   echo "[$(date)] post_today.py exited with $result"
