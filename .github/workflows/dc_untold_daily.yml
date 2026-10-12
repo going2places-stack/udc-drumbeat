@@ -12,6 +12,9 @@ on:
       retry_failed:
         description: "1 = allow a same-day retry after a failed run already wrote facts/YYYY-MM-DD.md"
         default: "0"
+      repost_today:
+        description: "1 = repost today's saved fact with current assets/music, without researching a new fact"
+        default: "0"
       facebook_only_url:
         description: "Optional: post this existing public MP4 URL to Facebook only"
         default: ""
@@ -62,6 +65,7 @@ jobs:
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL || 'claude-sonnet-5' }}
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
           RETRY_FAILED: ${{ github.event.inputs.retry_failed || '0' }}
+          REPOST_TODAY: ${{ github.event.inputs.repost_today || '0' }}
           FACEBOOK_ONLY_URL: ${{ github.event.inputs.facebook_only_url || '' }}
           FACEBOOK_ONLY_DESCRIPTION: ${{ github.event.inputs.facebook_only_description || '' }}
         run: python dc_untold_daily.py

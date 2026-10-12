@@ -55,6 +55,7 @@ TODAY_S = TODAY.isoformat()
 ENV = os.environ.get
 DRY = ENV("DRY_RUN", "0") == "1"
 RETRY_FAILED = ENV("RETRY_FAILED", "0") == "1"
+REPOST_TODAY = ENV("REPOST_TODAY", "0") == "1"
 PAUSED = ENV("PAUSE", "0") == "1"
 POST_DAYS = {d.strip()[:3].title() for d in ENV("POST_DAYS", "Mon,Wed,Fri").split(",")}
 IS_POST_DAY = TODAY.strftime("%a") in POST_DAYS
@@ -518,14 +519,101 @@ def caption_for(fact):
             f"#DCUntold #DCHistory #WashingtonDC #UnofficialDC {tags}").strip()
 
 
+def markdown_section(text, heading):
+    m = re.search(rf"^## {re.escape(heading)}\n(.*?)(?=\n## |\Z)", text, re.M | re.S)
+    return m.group(1).strip() if m else ""
+
+
+def load_repo_record(path):
+    with open(path) as f:
+        text = f.read()
+    title = re.search(r"^# (.+)$", text, re.M)
+    meta = dict(re.findall(r"^- ([^:]+): *(.*)$", text, re.M))
+    source = markdown_section(text, "Source")
+    source_line = re.search(r"^- (.+?): (https?://\S+)", source, re.M)
+    quote = re.search(r"^> (.*)$", source, re.M)
+    return {
+        "headline": title.group(1) if title else TODAY_S,
+        "angle": meta.get("Angle", "DC UNTOLD"),
+        "era": meta.get("Era", ""),
+        "place": meta.get("Place", ""),
+        "tags": [t.strip() for t in meta.get("Tags", "").split(",") if t.strip()],
+        "fact": markdown_section(text, "Fact"),
+        "takeaway": markdown_section(text, "Takeaway"),
+        "source_name": source_line.group(1) if source_line else "",
+        "source_url": source_line.group(2) if source_line else "",
+        "source_quote": quote.group(1) if quote else "",
+    }
+
+
+def post_fact(fact, verify_note, asset_suffix=""):
+    png, mp4 = f"out/{TODAY_S}{asset_suffix}.png", f"out/{TODAY_S}{asset_suffix}.mp4"
+    os.makedirs("out", exist_ok=True)
+    render_card(fact, png)
+    render_video(png, mp4)
+    log("rendered card + video")
+
+    if DRY:
+        notion_create_fact(fact, "Ready")
+        write_repo_record(fact, "Ready", [], verify_note)
+        log("DRY: skipping upload/post")
+        return "Ready"
+
+    post_urls, errors, notes = [], [], []
+    video_url = None
+    try:
+        _, video_url = drive_upload_public(mp4, f"dc-untold-{TODAY_S}{asset_suffix}.mp4")
+        log(f"uploaded to Drive: {video_url}")
+    except Exception as e:
+        drive_error = f"drive: {e}"
+        log(f"drive failed: {e}")
+        try:
+            video_url = github_release_upload_public(mp4, f"dc-untold-{TODAY_S}{asset_suffix}.mp4")
+            log(f"uploaded to GitHub release asset: {video_url}")
+            notes.append(f"fallback used after {drive_error}")
+        except Exception as gh_e:
+            errors.append(drive_error)
+            errors.append(f"github release: {gh_e}")
+            log(f"github release failed: {gh_e}")
+
+    if video_url:
+        cap = caption_for(fact)
+        for name, fn in (("instagram", ig_post_reel), ("facebook", fb_post_video)):
+            try:
+                post_urls.append(fn(video_url, cap))
+                log(f"{name} posted: {post_urls[-1]}")
+            except Exception as e:
+                errors.append(f"{name}: {e}")
+                log(f"{name} failed: {e}")
+
+    status = "Posted" if post_urls and not errors else ("Posted (partial)" if post_urls else "Failed")
+    log_text = "; ".join(errors + notes) or "ok"
+    notion_create_fact(fact, status, post_url=post_urls[0] if post_urls else None,
+                       extra_log=log_text + f" | verify: {verify_note}")
+    write_repo_record(fact, status, post_urls, verify_note)
+    telegram(f"DC Untold {status} ({TODAY_S}): {fact['headline']}\n" + "\n".join(post_urls) +
+             ("\nErrors: " + "; ".join(errors) if errors else ""))
+    if status == "Failed":
+        sys.exit(1)
+    return status
+
+
 # ---------------------------------------------------------------- main
 
 def main():
-    log(f"run start {TODAY_S} dry={DRY} retry_failed={RETRY_FAILED} paused={PAUSED} post_day={IS_POST_DAY}")
+    log(f"run start {TODAY_S} dry={DRY} retry_failed={RETRY_FAILED} repost_today={REPOST_TODAY} paused={PAUSED} post_day={IS_POST_DAY}")
     if ENV("FACEBOOK_ONLY_URL"):
         url = fb_post_video(ENV("FACEBOOK_ONLY_URL"), ENV("FACEBOOK_ONLY_DESCRIPTION", "DC Untold daily fact."))
         log(f"facebook posted: {url}")
         telegram(f"DC Untold Facebook repair posted ({TODAY_S}): {url}")
+        return
+
+    if REPOST_TODAY:
+        path = f"facts/{TODAY_S}.md"
+        if not os.path.exists(path):
+            raise SystemExit(f"Cannot repost: {path} does not exist")
+        fact = load_repo_record(path)
+        post_fact(fact, "repost from existing verified repo record", asset_suffix="-repost")
         return
 
     if os.path.exists(f"facts/{TODAY_S}.md"):
@@ -560,54 +648,7 @@ def main():
         telegram(f"DC Untold fact collected ({TODAY_S}), {why}: {fact['headline']}")
         return
 
-    png, mp4 = f"out/{TODAY_S}.png", f"out/{TODAY_S}.mp4"
-    os.makedirs("out", exist_ok=True)
-    render_card(fact, png)
-    render_video(png, mp4)
-    log("rendered card + video")
-
-    if DRY:
-        notion_create_fact(fact, "Ready")
-        write_repo_record(fact, "Ready", [], verify_note)
-        log("DRY: skipping upload/post")
-        return
-
-    post_urls, errors, notes = [], [], []
-    video_url = None
-    try:
-        _, video_url = drive_upload_public(mp4, f"dc-untold-{TODAY_S}.mp4")
-        log(f"uploaded to Drive: {video_url}")
-    except Exception as e:
-        drive_error = f"drive: {e}"
-        log(f"drive failed: {e}")
-        try:
-            video_url = github_release_upload_public(mp4, f"dc-untold-{TODAY_S}.mp4")
-            log(f"uploaded to GitHub release asset: {video_url}")
-            notes.append(f"fallback used after {drive_error}")
-        except Exception as gh_e:
-            errors.append(drive_error)
-            errors.append(f"github release: {gh_e}")
-            log(f"github release failed: {gh_e}")
-
-    if video_url:
-        cap = caption_for(fact)
-        for name, fn in (("instagram", ig_post_reel), ("facebook", fb_post_video)):
-            try:
-                post_urls.append(fn(video_url, cap))
-                log(f"{name} posted: {post_urls[-1]}")
-            except Exception as e:
-                errors.append(f"{name}: {e}")
-                log(f"{name} failed: {e}")
-
-    status = "Posted" if post_urls and not errors else ("Posted (partial)" if post_urls else "Failed")
-    log_text = "; ".join(errors + notes) or "ok"
-    notion_create_fact(fact, status, post_url=post_urls[0] if post_urls else None,
-                       extra_log=log_text + f" | verify: {verify_note}")
-    write_repo_record(fact, status, post_urls, verify_note)
-    telegram(f"DC Untold {status} ({TODAY_S}): {fact['headline']}\n" + "\n".join(post_urls) +
-             ("\nErrors: " + "; ".join(errors) if errors else ""))
-    if status == "Failed":
-        sys.exit(1)
+    post_fact(fact, verify_note)
 
 
 if __name__ == "__main__":
