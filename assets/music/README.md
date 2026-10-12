@@ -1,7 +1,8 @@
-# Music bed
+# Optional music bed
 
-Put ONE royalty-free track here named `bed.mp3` (15 seconds or longer; the runner cuts it to
-CLIP_SECONDS and fades it out). Put the license next to it as `bed-LICENSE.txt` with:
+By default, the runner renders silent videos. To add music, put ONE royalty-free track here named
+`bed.mp3` (15 seconds or longer; the runner cuts it to CLIP_SECONDS and fades it out).
+Put the license next to it as `bed-LICENSE.txt` with:
 the track title, the artist, where it was downloaded, the license name, the date, and the
 attribution line if the license requires one (if it does, add that line to the caption in
 `caption_for()` in dc_untold_daily.py).

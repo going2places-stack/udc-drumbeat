@@ -347,14 +347,19 @@ def render_card(fact, out_png):
 
 
 def render_video(png, out_mp4):
-    if not os.path.exists(MUSIC):
-        raise SystemExit(f"Music bed not found at {MUSIC}. See assets/music/README.md")
-    cmd = ["ffmpeg", "-y", "-loop", "1", "-i", png, "-i", MUSIC,
-           "-t", str(CLIP_SECONDS), "-r", "30",
-           "-vf", "scale=1080:1920,format=yuv420p",
-           "-c:v", "libx264", "-preset", "medium", "-crf", "20",
-           "-c:a", "aac", "-b:a", "128k", "-af", f"afade=t=out:st={CLIP_SECONDS - 2}:d=2",
-           "-shortest", "-movflags", "+faststart", out_mp4]
+    cmd = ["ffmpeg", "-y", "-loop", "1", "-i", png]
+    if os.path.exists(MUSIC):
+        log(f"using music bed: {MUSIC}")
+        cmd.extend(["-i", MUSIC])
+        audio_args = ["-c:a", "aac", "-b:a", "128k",
+                      "-af", f"afade=t=out:st={CLIP_SECONDS - 2}:d=2", "-shortest"]
+    else:
+        log(f"no music bed found at {MUSIC}; rendering silent video")
+        audio_args = []
+    cmd.extend(["-t", str(CLIP_SECONDS), "-r", "30",
+                "-vf", "scale=1080:1920,format=yuv420p",
+                "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+                *audio_args, "-movflags", "+faststart", out_mp4])
     subprocess.run(cmd, check=True, capture_output=True)
 
 

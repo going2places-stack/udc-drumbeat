@@ -1,9 +1,0 @@
-Track title: DC Untold Ambient Bed 001
-Artist: Unofficial DC automation project
-Created: 2026-10-12
-Source: Generated locally for this repository with FFmpeg sine-wave synthesis.
-License: Original project-owned audio bed. Cleared for Unofficial DC commercial social media use, including API-published Instagram and Facebook videos.
-Attribution: No attribution required.
-
-Generation notes:
-This file was created from simple synthesized tones, not sampled from a third-party recording or platform music library.
