@@ -102,7 +102,7 @@ def raise_api_error(r):
     try:
         r.raise_for_status()
     except requests.HTTPError as e:
-        raise requests.HTTPError(f"{e}; response={r.text[:1000]}", response=r.response) from e
+        raise requests.HTTPError(f"{e}; response={r.text[:1000]}", response=r) from e
 
 
 # ---------------------------------------------------------------- notion
