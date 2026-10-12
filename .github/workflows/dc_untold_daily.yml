@@ -1,0 +1,103 @@
+name: DC Untold Daily Fact
+
+on:
+  schedule:
+    # 13:10 UTC = 9:10 AM EDT / 8:10 AM EST. Codex: adjust after the November clock change if it matters.
+    - cron: "10 13 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "1 = research/verify/render only, no upload, no post, no Notion write"
+        default: "0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dc-untold-daily
+  cancel-in-progress: false
+
+jobs:
+  fact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg + fonts
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg fonts-dejavu-core
+
+      - name: Install Python deps
+        run: pip install -q -r requirements-dcuntold.txt
+
+      - name: Run
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_FACTS_DB_ID: ${{ secrets.NOTION_FACTS_DB_ID }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          GDRIVE_SA_JSON: ${{ secrets.GDRIVE_SA_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          POST_DAYS: ${{ vars.POST_DAYS || 'Mon,Wed,Fri' }}
+          PAUSE: ${{ vars.PAUSE || '0' }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL || 'claude-sonnet-5' }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+        run: python dc_untold_daily.py
+
+      - name: Commit fact record
+        if: always()
+        run: |
+          git config user.name "dc-untold-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add facts/ || true
+          git diff --cached --quiet || git commit -m "fact: $(date -u +%F)"
+          git push || true
+
+      - name: Keep the rendered clip as an artifact (30 days)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clip-${{ github.run_id }}
+          path: out/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      # Silence is never "fine": if the job itself dies before the script can message
+      # Telegram, this step still tells Kevin.
+      - name: Alert on job failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          [ -z "$TELEGRAM_BOT_TOKEN" ] && exit 0
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+            -d chat_id="$TELEGRAM_CHAT_ID" \
+            --data-urlencode text="DC Untold daily job FAILED: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > /dev/null
+
+  # Weekly backup. Never on the daily path; if this fails, nothing else is affected.
+  mirror:
+    if: github.event_name == 'schedule'
+    needs: fact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q google-api-python-client google-auth
+      - name: Mirror facts/ and posted/ to Drive (Sundays only)
+        env:
+          GDRIVE_SA_JSON: ${{ secrets.GDRIVE_SA_JSON }}
+          GDRIVE_MIRROR_FOLDER_ID: ${{ secrets.GDRIVE_MIRROR_FOLDER_ID }}
+        run: |
+          [ "$(date -u +%u)" = "7" ] || { echo "not Sunday, skip"; exit 0; }
+          python mirror_to_drive.py
