@@ -62,6 +62,7 @@ IS_POST_DAY = TODAY.strftime("%a") in POST_DAYS
 MODEL = ENV("CLAUDE_MODEL", "claude-sonnet-5")
 NOTION_VERSION = "2022-06-28"
 GRAPH = "https://graph.facebook.com/v21.0"
+GRAPH_VIDEO = "https://graph-video.facebook.com/v21.0"
 
 # Brand defaults. DC Untold uses the navy from the cover art; override via env if needed.
 BG = ENV("CARD_BG", "#2B3B6E")
@@ -95,6 +96,13 @@ def need(name):
     if not v:
         raise SystemExit(f"Missing required env: {name}")
     return v
+
+
+def raise_api_error(r):
+    try:
+        r.raise_for_status()
+    except requests.HTTPError as e:
+        raise requests.HTTPError(f"{e}; response={r.text[:1000]}", response=r.response) from e
 
 
 # ---------------------------------------------------------------- notion
@@ -436,9 +444,9 @@ def ig_post_reel(video_url, caption):
 
 def fb_post_video(video_url, description):
     tok, page = need("META_ACCESS_TOKEN"), need("FB_PAGE_ID")
-    r = requests.post(f"{GRAPH}/{page}/videos", data={
+    r = requests.post(f"{GRAPH_VIDEO}/{page}/videos", data={
         "file_url": video_url, "description": description, "access_token": tok}, timeout=120)
-    r.raise_for_status()
+    raise_api_error(r)
     vid = r.json()["id"]
     return f"https://www.facebook.com/{page}/videos/{vid}"
 
@@ -503,6 +511,12 @@ def caption_for(fact):
 
 def main():
     log(f"run start {TODAY_S} dry={DRY} retry_failed={RETRY_FAILED} paused={PAUSED} post_day={IS_POST_DAY}")
+    if ENV("FACEBOOK_ONLY_URL"):
+        url = fb_post_video(ENV("FACEBOOK_ONLY_URL"), ENV("FACEBOOK_ONLY_DESCRIPTION", "DC Untold daily fact."))
+        log(f"facebook posted: {url}")
+        telegram(f"DC Untold Facebook repair posted ({TODAY_S}): {url}")
+        return
+
     if os.path.exists(f"facts/{TODAY_S}.md"):
         if RETRY_FAILED:
             log("fact record already exists for today; retry_failed=1 so continuing")
