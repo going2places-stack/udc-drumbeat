@@ -9,6 +9,9 @@ on:
       dry_run:
         description: "1 = research/verify/render only, no upload, no post, no Notion write"
         default: "0"
+      retry_failed:
+        description: "1 = allow a same-day retry after a failed run already wrote facts/YYYY-MM-DD.md"
+        default: "0"
 
 permissions:
   contents: write
@@ -50,6 +53,7 @@ jobs:
           PAUSE: ${{ vars.PAUSE || '0' }}
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL || 'claude-sonnet-5' }}
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+          RETRY_FAILED: ${{ github.event.inputs.retry_failed || '0' }}
         run: python dc_untold_daily.py
 
       - name: Commit fact record

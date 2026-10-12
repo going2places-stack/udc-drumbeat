@@ -52,6 +52,7 @@ TODAY_S = TODAY.isoformat()
 
 ENV = os.environ.get
 DRY = ENV("DRY_RUN", "0") == "1"
+RETRY_FAILED = ENV("RETRY_FAILED", "0") == "1"
 PAUSED = ENV("PAUSE", "0") == "1"
 POST_DAYS = {d.strip()[:3].title() for d in ENV("POST_DAYS", "Mon,Wed,Fri").split(",")}
 IS_POST_DAY = TODAY.strftime("%a") in POST_DAYS
@@ -461,10 +462,13 @@ def caption_for(fact):
 # ---------------------------------------------------------------- main
 
 def main():
-    log(f"run start {TODAY_S} dry={DRY} paused={PAUSED} post_day={IS_POST_DAY}")
+    log(f"run start {TODAY_S} dry={DRY} retry_failed={RETRY_FAILED} paused={PAUSED} post_day={IS_POST_DAY}")
     if os.path.exists(f"facts/{TODAY_S}.md"):
-        log("already have a fact for today; exiting")
-        return
+        if RETRY_FAILED:
+            log("fact record already exists for today; retry_failed=1 so continuing")
+        else:
+            log("already have a fact for today; exiting")
+            return
 
     titles, tags = notion_existing_facts()
     log(f"{len(titles)} existing facts for dedupe")
@@ -509,6 +513,7 @@ def main():
         log(f"uploaded to Drive: {video_url}")
     except Exception as e:
         errors.append(f"drive: {e}")
+        log(f"drive failed: {e}")
         video_url = None
 
     if video_url:
