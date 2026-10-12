@@ -444,8 +444,14 @@ def ig_post_reel(video_url, caption):
 
 def fb_post_video(video_url, description):
     tok, page = need("META_ACCESS_TOKEN"), need("FB_PAGE_ID")
+    page_token = tok
+    r = requests.get(f"{GRAPH}/{page}", params={"fields": "access_token", "access_token": tok}, timeout=30)
+    if r.ok and r.json().get("access_token"):
+        page_token = r.json()["access_token"]
+    else:
+        log(f"facebook page token lookup did not return a token; using original token: {r.text[:500]}")
     r = requests.post(f"{GRAPH_VIDEO}/{page}/videos", data={
-        "file_url": video_url, "description": description, "access_token": tok}, timeout=120)
+        "file_url": video_url, "description": description, "access_token": page_token}, timeout=120)
     raise_api_error(r)
     vid = r.json()["id"]
     return f"https://www.facebook.com/{page}/videos/{vid}"
