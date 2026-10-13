@@ -73,6 +73,7 @@ FONT_BOLD = ENV("CARD_FONT_BOLD", "/usr/share/fonts/truetype/dejavu/DejaVuSans-B
 FONT_REG = ENV("CARD_FONT", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
 MUSIC = ENV("MUSIC_FILE", "assets/music/bed.mp3")
 CLIP_SECONDS = int(ENV("CLIP_SECONDS", "15"))
+SEED_BACKLOG = ENV("SEED_BACKLOG", "facts/seed_backlog.json")
 
 ANGLES = ["DC UNTOLD", "Did You Know?", "DC Is More Than Politics"]
 
@@ -179,8 +180,19 @@ def notion_create_fact(fact, status, post_url=None, extra_log=""):
 
 SYSTEM = """You are the researcher for DC Untold, a Washington, DC history series whose entire
 reputation rests on the paper trail. You find ONE surprising, verifiable fact about DC history or
-culture per request. Prefer overlooked people, neighborhoods, institutions, art, music, commerce,
-traditions, inventions, architecture. Avoid federal-politics trivia and anything on the avoid list.
+culture per request.
+
+Editorial north star:
+- DC Untold is not generic trivia. Prefer facts with stakes: overlooked people, Black Washington,
+  queer DC, women-led institutions, immigrant communities, local business, neighborhood culture,
+  music, science, invention, displacement, civic infrastructure, and vanished community traditions.
+- Prefer "DC shaped the nation" or "a neighborhood carried something important" over "a famous
+  person once passed through DC."
+- A good fact has a human, institution, neighborhood, or power conflict, plus a plain-language
+  reason it matters now.
+- Use "Did You Know?" sparingly for lighter surprise posts. Keep the core tone warm, specific,
+  curious, and grounded in under-told Washington.
+- Avoid federal-politics trivia, monument boilerplate, tourist facts, and anything on the avoid list.
 
 Hard rules:
 - The fact must be supported by a specific, publicly reachable web page (library, archive, museum,
@@ -231,6 +243,32 @@ def research(existing_titles, existing_tags):
     if fact.get("angle") not in ANGLES:
         fact["angle"] = ANGLES[0]
     return fact
+
+
+def load_seed_backlog():
+    if not os.path.exists(SEED_BACKLOG):
+        return []
+    with open(SEED_BACKLOG) as f:
+        data = json.load(f)
+    if not isinstance(data, list):
+        raise RuntimeError(f"{SEED_BACKLOG} must contain a JSON list")
+    return data
+
+
+def seed_candidates(existing_titles):
+    covered = {t.lower().strip() for t in existing_titles}
+    today_path = f"facts/{TODAY_S}.md"
+    if os.path.exists(today_path):
+        try:
+            covered.add(load_repo_record(today_path)["headline"].lower().strip())
+        except Exception:
+            pass
+    candidates = []
+    for fact in load_seed_backlog():
+        title = (fact.get("headline") or "").lower().strip()
+        if title and title not in covered:
+            candidates.append(fact)
+    return candidates
 
 
 # ---------------------------------------------------------------- verify
@@ -628,7 +666,18 @@ def main():
 
     fact = None
     verify_note = ""
+    for seed in seed_candidates(titles)[:3]:
+        log(f"trying seed backlog fact: {seed['headline']}")
+        ok, verify_note = verify(seed)
+        log(f"seed attempt: {seed['headline']} -> {verify_note}")
+        if ok:
+            fact = seed
+            break
+        titles.insert(0, seed["headline"])
+
     for attempt in range(1, 4):
+        if fact:
+            break
         fact = research(titles, tags)
         ok, verify_note = verify(fact)
         log(f"attempt {attempt}: {fact['headline']} -> {verify_note}")
