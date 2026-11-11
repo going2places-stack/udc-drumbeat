@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "Retired: use install_local_launchd.sh and GitHub's native cloud fallback." >&2
+exit 1
+
 LABEL="com.unofficialdc.drumbeat.github-dispatch"
 REPO_DIR="/Users/clawagent/Documents/ChatGPT/UDC - Drumbeat Posts"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"

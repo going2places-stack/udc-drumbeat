@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_DIR="/Users/clawagent/Documents/ChatGPT/UDC - Drumbeat Posts"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG_DIR="$REPO_DIR/logs"
 ENV_FILE="$REPO_DIR/.env"
 LOCK_DIR="/tmp/udc-drumbeat-local.lock"
@@ -44,6 +44,11 @@ export DRY_RUN="${DRY_RUN:-0}"
 export ALLOW_PARTIAL="${ALLOW_PARTIAL:-0}"
 export PLATFORMS_OVERRIDE="${PLATFORMS_OVERRIDE:-}"
 
+if [ -f "$REPO_DIR/dry-run-once" ]; then
+  export DRY_RUN=1
+  rm "$REPO_DIR/dry-run-once"
+fi
+
 {
   echo "[$(date)] Starting local publish. DRY_RUN=$DRY_RUN ALLOW_PARTIAL=$ALLOW_PARTIAL PLATFORMS_OVERRIDE=$PLATFORMS_OVERRIDE"
   set +e
@@ -52,12 +57,6 @@ export PLATFORMS_OVERRIDE="${PLATFORMS_OVERRIDE:-}"
   set -e
   echo "[$(date)] post_today.py exited with $result"
 
-  today="$(TZ=America/New_York date +%F)"
-  if [ "$DRY_RUN" != "1" ] && [ -f "posted/$today.md" ]; then
-    git add "posted/$today.md" || true
-    git diff --cached --quiet || git commit -m "archive: $today"
-    git push || true
-  fi
-
+  # Python saves shared claims and receipts on the drumbeat-state branch.
   exit "$result"
 } >> "$LOG_DIR/local-publish.log" 2>&1

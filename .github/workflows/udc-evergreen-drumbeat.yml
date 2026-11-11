@@ -2,11 +2,8 @@ name: UDC Evergreen Drumbeat
 
 on:
   schedule:
-    - cron: "0 13 * * *"
-    - cron: "0 14 * * *"
-    - cron: "0 15 * * *"
-    - cron: "0 16 * * *"
-    - cron: "0 17 * * *"
+    # Cloud fallback after local attempts, in both EST and EDT.
+    - cron: "15 14,15 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -18,7 +15,7 @@ on:
         required: false
         default: ""
       allow_partial:
-        description: "Use 1 to retry rows marked Posted (partial)"
+        description: "Partial retries require manual reconciliation; leave at 0"
         required: false
         default: "0"
 
@@ -32,6 +29,7 @@ concurrency:
 jobs:
   post:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -47,15 +45,16 @@ jobs:
           fi
 
           eastern_hour="$(TZ=America/New_York date +%H)"
-          if (( 10#$eastern_hour >= 9 )); then
+          if (( 10#$eastern_hour >= 10 )); then
             echo "should_run=1" >> "$GITHUB_OUTPUT"
           else
             echo "should_run=0" >> "$GITHUB_OUTPUT"
-            echo "Skipping scheduled run because it is ${eastern_hour}:00 Eastern, before 09:00."
+            echo "Skipping early fallback; local publishing has until 10:00 Eastern."
           fi
       - name: Publish today's post
         if: steps.schedule_window.outputs.should_run == '1'
         env:
+          GH_TOKEN: ${{ github.token }}
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
@@ -68,11 +67,12 @@ jobs:
           PLATFORMS_OVERRIDE: ${{ github.event.inputs.platforms || '' }}
           ALLOW_PARTIAL: ${{ github.event.inputs.allow_partial || '0' }}
         run: python post_today.py
-      - name: Archive posted record
+      - name: Keep explicit publishing outcome and receipts
         if: always() && steps.schedule_window.outputs.should_run == '1'
-        run: |
-          git config user.name "udc-drumbeat"
-          git config user.email "drumbeat@unofficialdc.com"
-          git add posted/ || true
-          git diff --cached --quiet || git commit -m "archive: $(date -u +%F)"
-          git push || true
+        uses: actions/upload-artifact@v4
+        with:
+          name: evergreen-receipts-${{ github.run_id }}
+          path: |
+            runs/
+            posted/
+          retention-days: 90

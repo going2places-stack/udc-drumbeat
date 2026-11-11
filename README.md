@@ -8,7 +8,9 @@ Daily GitHub Actions automation for posting approved Unofficial DC evergreen con
 - Database URL: `https://app.notion.com/p/231e4d25992845e3a610b9f4c65f0357`
 - Use `231e4d25992845e3a610b9f4c65f0357` for the `NOTION_DATABASE_ID` GitHub secret.
 - Data source ID for connector/admin tooling: `f93bccc4-474a-41dc-8c63-f71558e2ff3a`
-- The workflow runs daily at 9am Eastern and can also be run manually with `dry_run`.
+- The Mac targets 9am Eastern; GitHub is a later cloud fallback. Both use the same atomic daily claim.
+- The approved eight-item evergreen rotation keeps 14 days queued in Notion.
+- Runs explicitly report PUBLISHED, ALREADY_POSTED, NOTHING_SCHEDULED, or FAILED/NEEDS_REVIEW, with actual platform links where available.
 
 ## Required GitHub Secrets
 
@@ -34,7 +36,7 @@ python scripts/import_ready_posts.py --input data/ready_posts.json --dry-run
 
 ## Local 9:00 a.m. Publisher
 
-For a more punctual local clock than GitHub Actions, use the macOS launchd runners documented in `docs/local_scheduler.md`. Fully local posting runs `post_today.py` from the Mac with a private `.env`. Bridge mode triggers GitHub `workflow_dispatch` later in the morning using the existing GitHub secrets. Notion status prevents duplicate posts.
+Use `bash scripts/install_local_launchd.sh` to install the private runtime outside Documents. See `docs/local_scheduler.md` for schedule, verification, shared ledger, and recovery. The previous local dispatch bridge is disabled. A shared create-only daily claim prevents competing local/cloud publishing; uncertain results stop for review rather than retrying blindly.
 
 ## Notes
 
