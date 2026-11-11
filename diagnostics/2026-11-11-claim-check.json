@@ -2,7 +2,9 @@
   "date": "2026-11-11",
   "page_id": "diagnostic-only",
   "title": "No-publish duplicate claim check",
-  "outcome": "publishing",
+  "outcome": "passed",
   "receipts": {},
-  "started_at": "2026-11-11T17:41:51.762891+00:00"
+  "started_at": "2026-11-11T17:41:51.762891+00:00",
+  "note": "First runner acquired; second runner refused. No platform publishing calls.",
+  "updated_at": "2026-11-11T17:41:53.410160+00:00"
 }
