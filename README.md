@@ -9,7 +9,7 @@ Daily GitHub Actions automation for posting approved Unofficial DC evergreen con
 - Use `231e4d25992845e3a610b9f4c65f0357` for the `NOTION_DATABASE_ID` GitHub secret.
 - Data source ID for connector/admin tooling: `f93bccc4-474a-41dc-8c63-f71558e2ff3a`
 - The Mac targets 9am Eastern; GitHub is a later cloud fallback. Both use the same atomic daily claim.
-- The approved eight-item evergreen rotation keeps 14 days queued in Notion.
+- The approved evergreen library keeps 14 days queued in Notion and bypasses entries on editorial hold.
 - Runs explicitly report PUBLISHED, ALREADY_POSTED, NOTHING_SCHEDULED, or FAILED/NEEDS_REVIEW, with actual platform links where available.
 
 ## Required GitHub Secrets
@@ -39,5 +39,7 @@ python scripts/import_ready_posts.py --input data/ready_posts.json --dry-run
 Use `bash scripts/install_local_launchd.sh` to install the private runtime outside Documents. See `docs/local_scheduler.md` for schedule, verification, shared ledger, and recovery. The previous local dispatch bridge is disabled. A shared create-only daily claim prevents competing local/cloud publishing; uncertain results stop for review rather than retrying blindly.
 
 ## Notes
+
+The new [30-message content bank](https://www.notion.so/c28cf095e085400abaf257f2b893bd0d) is separate from the live calendar. Three music/video samples are ready for review; new artwork is not yet approved for publication. See [creative rollout status](docs/baseline_rollout.md). Stories have a guarded, dry-run-by-default adapter but no enabled recurring schedule. Other social destinations are not yet automated.
 
 Meta requires `image_url` values to be reachable by Meta's servers. If images are stored in private Google Drive links, either upload them into Notion as files or use a public/direct image URL before running a real publish.

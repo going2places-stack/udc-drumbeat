@@ -6,3 +6,6 @@ logs/
 runs/
 out/
 *.mp4
+assets/generated/**/*-frame-*.jpg
+assets/generated/**/*.m4a
+assets/generated/**/review-concat.txt

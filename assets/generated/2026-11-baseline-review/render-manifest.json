@@ -1,0 +1,24 @@
+{
+  "review_only": true,
+  "dimensions": [
+    1080,
+    1920
+  ],
+  "fps": 24,
+  "seconds_per_clip": 12,
+  "music": "Calm Documentary Background \u2014 Universfield",
+  "music_license": "assets/music/bed-LICENSE.txt",
+  "music_offsets_seconds": [
+    0,
+    18,
+    40
+  ],
+  "narration": null,
+  "visual_provenance": "AI-generated illustrative artwork; not documentary photography",
+  "timeline": "0\u20134s full message; 4\u20138s closer artwork detail; 8\u201312s full message. 0.5s dissolves.",
+  "outputs": [
+    "01-neighborhood-music-review.mp4",
+    "02-texture-music-review.mp4",
+    "03-corner-shop-music-review.mp4"
+  ]
+}

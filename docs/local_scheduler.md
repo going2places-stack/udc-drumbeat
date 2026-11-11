@@ -28,11 +28,14 @@ in both standard and daylight time. GitHub can delay scheduled execution.
 [UDC Evergreen Calendar](https://www.notion.so/231e4d25992845e3a610b9f4c65f0357)
 contains the plan, status, Post URL, and Log (both platform links).
 
-`evergreen_queue.py` maintains today plus 13 future days using the eight existing
-approved static images and captions in `data/approved_evergreen.json`. Assets
-repeat every eight days; National Mall, Go-Go, and the blossom design are mixed
-with the five quote designs. Add approved material to the library and ORDER to
-expand the rotation. This does not create new animations or DC Untold episodes.
+`evergreen_queue.py` maintains today plus 13 future days using the existing
+static library in `data/approved_evergreen.json`. Four named-author designs
+(Lao Tzu, Aristotle, Rumi, Gandhi) are held pending attribution reconciliation.
+`rotation_item` replaces a held slot with an approved wordless DC design.
+Seven future rows were reconciled on November 11; posted history was preserved.
+Captions include #UnofficialDC and #LoveIsTheNorthStar with deduplicated tags.
+The new 30-message bank and three video samples remain separate drafts pending
+creative review; they are not in this publisher's live rotation. DC Untold is separate.
 
 Only missing dates are filled. Existing planned, posted, skipped, and failed rows
 are preserved. Old September rows remain historical. There is no automatic

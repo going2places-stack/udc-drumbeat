@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo
 import requests
 from publishing_state import DailyState
 from evergreen_queue import ensure_queue
+from brand_defaults import brand_hashtags
 
 TZ = ZoneInfo("America/New_York")
 GRAPH = "https://graph.facebook.com/v21.0"
@@ -102,7 +103,7 @@ def parse_row(page):
         image_url = first["file"]["url"] if first["type"] == "file" else first["external"]["url"]
 
     caption = rich_text(props.get("Caption", {})).strip()
-    hashtags = rich_text(props.get("Hashtags", {})).strip()
+    hashtags = brand_hashtags(rich_text(props.get("Hashtags", {})).strip())
     platforms = [item["name"] for item in props.get("Platforms", {}).get("multi_select", [])]
     if PLATFORMS_OVERRIDE:
         platforms = PLATFORMS_OVERRIDE

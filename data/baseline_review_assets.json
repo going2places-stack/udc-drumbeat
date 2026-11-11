@@ -1,0 +1,51 @@
+{
+  "review_only": true,
+  "content_approval": false,
+  "asset_approval": false,
+  "review_home": "https://www.notion.so/41518f4229e98162b9b1ca1c66d977f4",
+  "private_drive_folder": "https://drive.google.com/drive/folders/1PvVnJcyzlWoVtNyfl93yMbu4zGxL6tEQ",
+  "files": [
+    {
+      "file": "01-neighborhood-feed.png",
+      "drive_id": "1laxHlfmNf8OGoeQXQaI6gENHMnSSytsk",
+      "review_url": "https://drive.google.com/file/d/1laxHlfmNf8OGoeQXQaI6gENHMnSSytsk/view?usp=drivesdk",
+      "public": false
+    },
+    {
+      "file": "02-texture-feed.png",
+      "drive_id": "1DIYRinLSvg3AF207MzEjNmHKoAIfqbav",
+      "review_url": "https://drive.google.com/file/d/1DIYRinLSvg3AF207MzEjNmHKoAIfqbav/view?usp=drivesdk",
+      "public": false
+    },
+    {
+      "file": "03-corner-shop-feed.png",
+      "drive_id": "1m42-lUZR9cAvZwaXy8ocDeAmrU085BH4",
+      "review_url": "https://drive.google.com/file/d/1m42-lUZR9cAvZwaXy8ocDeAmrU085BH4/view?usp=drivesdk",
+      "public": false
+    },
+    {
+      "file": "01-neighborhood-music-review.mp4",
+      "drive_id": "1Md4x70Ssx72H6GhiIkT6jEZtn6lGh4Zy",
+      "review_url": "https://drive.google.com/file/d/1Md4x70Ssx72H6GhiIkT6jEZtn6lGh4Zy/view?usp=drivesdk",
+      "public": false
+    },
+    {
+      "file": "02-texture-music-review.mp4",
+      "drive_id": "1RFpHm9UmOqWfi4h5E89i5kKardn-HjdE",
+      "review_url": "https://drive.google.com/file/d/1RFpHm9UmOqWfi4h5E89i5kKardn-HjdE/view?usp=drivesdk",
+      "public": false
+    },
+    {
+      "file": "03-corner-shop-music-review.mp4",
+      "drive_id": "10uiHwauhvr9skjo-mg1uJoWWn8c4X8Hu",
+      "review_url": "https://drive.google.com/file/d/10uiHwauhvr9skjo-mg1uJoWWn8c4X8Hu/view?usp=drivesdk",
+      "public": false
+    },
+    {
+      "file": "sample-contact-sheet.jpg",
+      "drive_id": "1wqK31GLB2wOo5NzdKSs5_hwNaj_3Z1Um",
+      "review_url": "https://drive.google.com/file/d/1wqK31GLB2wOo5NzdKSs5_hwNaj_3Z1Um/view?usp=drivesdk",
+      "public": false
+    }
+  ]
+}

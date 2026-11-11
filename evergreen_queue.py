@@ -6,11 +6,24 @@ from pathlib import Path
 import requests
 
 from publishing_state import DailyState
+from brand_defaults import brand_hashtags
 
 EPOCH = dt.date(2026, 11, 11)
 ORDER = ["03-25 Lao Tzu", "03-24 MLK Jr.", "03-28 National Mall Wordless",
          "03-27 Aristotle", "03-29 Rumi", "03-30 Mahatma Gandhi",
          "04-07 Go-Go Drummers Wordless", "04-02 Cherry Blossom Logo Wordless"]
+
+
+def rotation_item(date, library):
+    item = library[ORDER[(date - EPOCH).days % len(ORDER)]]
+    if item.get("editorial_hold"):
+        # Keep the baseline running using existing approved wordless art while
+        # named-quote graphics await attribution/asset correction.
+        fallbacks = [x for x in library.values() if "Wordless" in x["name"] and not x.get("editorial_hold")]
+        if not fallbacks:
+            raise RuntimeError("No cleared fallback artwork is available.")
+        item = fallbacks[(date - EPOCH).days % len(fallbacks)]
+    return item
 
 
 def ensure_queue(today, database_id, headers):
@@ -42,14 +55,14 @@ def ensure_queue(today, database_id, headers):
         date = today + dt.timedelta(days=offset)
         if date.isoformat() in occupied:
             continue
-        item = library[ORDER[(date - EPOCH).days % len(ORDER)]]
+        item = rotation_item(date, library)
         def text(value):
             return {"rich_text": [{"text": {"content": value}}]}
         properties = {
             "Name": {"title": [{"text": {"content": f"{date} • {item['name']}"}}]},
             "Date": {"date": {"start": date.isoformat()}},
             "Status": {"select": {"name": "Scheduled"}},
-            "Caption": text(item["caption"]), "Hashtags": text(item["hashtags"]),
+            "Caption": text(item["caption"]), "Hashtags": text(brand_hashtags(item["hashtags"])),
             "Platforms": {"multi_select": [{"name": "Instagram"}, {"name": "Facebook"}]},
             "Image": {"files": [{"name": item["name"] + ".png", "type": "external",
                                     "external": {"url": item["image_url"]}}]},

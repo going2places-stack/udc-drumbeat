@@ -1,0 +1,14 @@
+{
+  "checked_on": "2026-11-11",
+  "baseline_time": "09:00 America/New_York",
+  "destinations": {
+    "Instagram feed": {"status": "live_verified", "account": "unofficial_dc"},
+    "Facebook feed": {"status": "live_verified", "page_id": "1151444268287688"},
+    "Instagram Story": {"status": "read_access_verified_adapter_pending_live_pilot", "enabled": false},
+    "Facebook Story": {"status": "read_access_verified_adapter_pending_live_pilot", "enabled": false},
+    "TikTok": {"status": "native_account_verified_automation_not_connected", "account": "unofficial_dc", "url": "https://www.tiktok.com/@unofficial_dc"},
+    "LinkedIn": {"status": "native_page_admin_verified_automation_not_connected", "organization_id": "112292974", "url": "https://www.linkedin.com/company/unofficialdc/"},
+    "Threads": {"status": "wrong_browser_account", "observed_account": "thegoodwordgame", "required_account": "unofficial_dc"},
+    "YouTube Shorts": {"status": "sign_in_required", "channel_id": "UCyI3HkQu63XJ24pnXwkqFJQ"}
+  }
+}
