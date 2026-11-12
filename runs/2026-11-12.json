@@ -1,10 +1,10 @@
 {
   "date": "2026-11-12",
-  "outcome": "PUBLISHED",
-  "note": "Published https://www.instagram.com/p/DfpOIC2Dano/, https://www.facebook.com/1722204973251470/posts/1723181509820483; All known URLs: https://www.instagram.com/p/DfpOIC2Dano/, https://www.facebook.com/1722204973251470/posts/1723181509820483",
+  "outcome": "ALREADY_POSTED",
+  "note": "Calendar says Posted; no new publish attempted.",
   "urls": [
     "https://www.instagram.com/p/DfpOIC2Dano/",
     "https://www.facebook.com/1722204973251470/posts/1723181509820483"
   ],
-  "checked_at": "2026-11-12T14:00:32.478647+00:00"
+  "checked_at": "2026-11-12T14:05:02.586936+00:00"
 }
