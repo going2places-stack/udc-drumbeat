@@ -1,10 +1,10 @@
 {
   "date": "2026-11-13",
-  "outcome": "PUBLISHED",
-  "note": "Published https://www.instagram.com/p/Dfry6xqDVDh/, https://www.facebook.com/1722204973251470/posts/1724469373025030; All known URLs: https://www.instagram.com/p/Dfry6xqDVDh/, https://www.facebook.com/1722204973251470/posts/1724469373025030",
+  "outcome": "ALREADY_POSTED",
+  "note": "Calendar says Posted; no new publish attempted.",
   "urls": [
     "https://www.instagram.com/p/Dfry6xqDVDh/",
     "https://www.facebook.com/1722204973251470/posts/1724469373025030"
   ],
-  "checked_at": "2026-11-13T14:00:38.329284+00:00"
+  "checked_at": "2026-11-13T14:05:03.183802+00:00"
 }
