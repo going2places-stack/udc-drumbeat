@@ -1,7 +1,7 @@
 {
   "date": "2026-11-21",
   "outcome": "NEEDS_REVIEW",
-  "note": "Instagram: Meta 17841404281856251/media_publish -> 400: {\"error\":{\"message\":\"Media ID is not available\",\"code\":9007,\"type\":\"OAuthException\",\"error_subcode\":2207027,\"is_transient\":false,\"error_user_msg\":\"The media is not ready for publishing, please wait for a moment\",\"error_user_title\":\"Cannot Publish\",\"fbtrace_id\":\"ALEdGvQNf1DbwUUqp7RigoM\"}}",
+  "note": "Calendar status is Failed; no automatic retry.",
   "urls": [],
-  "checked_at": "2026-11-21T14:00:19.353257+00:00"
+  "checked_at": "2026-11-21T14:05:06.498696+00:00"
 }
