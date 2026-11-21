@@ -2,7 +2,9 @@
   "date": "2026-11-21",
   "page_id": "41518f42-29e9-81a8-8189-c4de59d96ebc",
   "title": "2026-11-21 \u2022 03-28 National Mall Wordless",
-  "outcome": "publishing",
+  "outcome": "needs_review",
   "receipts": {},
-  "started_at": "2026-11-21T14:00:09.522488+00:00"
+  "started_at": "2026-11-21T14:00:09.522488+00:00",
+  "note": "Instagram: Meta 17841404281856251/media_publish -> 400: {\"error\":{\"message\":\"Media ID is not available\",\"code\":9007,\"type\":\"OAuthException\",\"error_subcode\":2207027,\"is_transient\":false,\"error_user_msg\":\"The media is not ready for publishing, please wait for a moment\",\"error_user_title\":\"Cannot Publish\",\"fbtrace_id\":\"ALEdGvQNf1DbwUUqp7RigoM\"}}",
+  "updated_at": "2026-11-21T14:00:17.857595+00:00"
 }
