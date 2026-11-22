@@ -2,7 +2,9 @@
   "date": "2026-11-22",
   "page_id": "41518f42-29e9-8174-9502-ed61b703fdef",
   "title": "2026-11-22 \u2022 04-07 Go-Go Drummers Wordless",
-  "outcome": "publishing",
+  "outcome": "needs_review",
   "receipts": {},
-  "started_at": "2026-11-22T14:00:09.488984+00:00"
+  "started_at": "2026-11-22T14:00:09.488984+00:00",
+  "note": "Instagram: Meta 17841404281856251/media -> 400: {\"error\":{\"message\":\"Timeout\",\"code\":-2,\"type\":\"OAuthException\",\"error_subcode\":2207003,\"is_transient\":false,\"error_user_msg\":\"It takes too long to download the media.\",\"error_user_title\":\"Timeout\",\"fbtrace_id\":\"ADzjSGrCPXdQ3Ja18A9ah-b\"}}",
+  "updated_at": "2026-11-22T14:00:21.501999+00:00"
 }
